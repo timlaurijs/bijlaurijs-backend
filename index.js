@@ -1,10 +1,32 @@
 require("dotenv").config()
 const express = require("express")
+const loggerMiddleWare = require("morgan")
 const corsMiddleWare = require("cors")
 const { PORT } = require("./config/constants")
 const menuRouter = require("./routers/menu")
+const authRouter = require("./routers/auth")
 
 const app = express()
+
+/**
+ * morgan:
+ *
+ * simple logging middleware so you can see
+ * what happened to your request
+ *
+ * example:
+ *
+ * METHOD   PATH        STATUS  RESPONSE_TIME   - Content-Length
+ *
+ * GET      /           200     1.807 ms        - 15
+ * POST     /echo       200     10.251 ms       - 26
+ * POST     /puppies    404     1.027 ms        - 147
+ *
+ * github: https://github.com/expressjs/morgan
+ *
+ */
+
+app.use(loggerMiddleWare("dev"))
 
 /**
  *
@@ -49,7 +71,9 @@ app.get("/", (req, res) => {
   res.send("Hi from express")
 })
 
+app.use("/", authRouter)
 app.use("/menus", menuRouter)
+
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`)
 })
